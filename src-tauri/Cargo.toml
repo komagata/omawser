@@ -1,0 +1,33 @@
+[package]
+name = "omawser"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "omawser"
+
+[[bin]]
+name = "omawser"
+path = "src/main.rs"
+
+[dependencies]
+url = "2.5"
+regex = "1"
+javascriptcore-rs = { version = "1", optional = true }
+notify = "6"
+tauri = { version = "=2.12.0", default-features = false, features = ["wry", "unstable"] }
+gtk = "0.18"
+webkit2gtk = { version = "2", features = ["v2_40"] }
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+gui-smoke = ["dep:javascriptcore-rs"]
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

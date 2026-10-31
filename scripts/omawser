@@ -1,0 +1,18 @@
+#!/bin/sh
+# Source-tree launcher template. A packaged install can exec the binary directly.
+set -eu
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+binary="$script_dir/../src-tauri/target/release/omawser"
+if [ ! -x "$binary" ]; then
+  printf '%s\n' 'Build first: cargo build --release --manifest-path src-tauri/Cargo.toml' >&2
+  exit 1
+fi
+. "$script_dir/graphics-compat.sh"
+wayland=no
+if [ "${XDG_SESSION_TYPE-}" = wayland ] || [ -n "${WAYLAND_DISPLAY-}" ]; then
+  # An explicit X11 GDK backend does not need the Wayland workaround.
+  [ "${GDK_BACKEND-}" = x11 ] || wayland=yes
+fi
+vendors=$(cat /sys/class/drm/card[0-9]*/device/vendor 2>/dev/null || :)
+oma_graphics_compat "$wayland" "$vendors"
+exec "$binary" "$@"

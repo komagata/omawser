@@ -1,0 +1,13 @@
+artifacts/
+node_modules/
+src-tauri/target
+src-tauri/gen/schemas/
+
+scripts/__pycache__/
+
+# Local benchmark captures, screenshots and review records
+perf/results/
+__pycache__/
+*.py[cod]
+.env
+.env.*

@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Omawser benchmark fixture</title>
+<style>
+  * {box-sizing:border-box} html {scroll-behavior:auto} body {margin:0;background:#17212b;color:#edf3f8;font:16px sans-serif}
+  header {padding:24px;background:#263a4c} main {padding:16px;display:grid;gap:12px;grid-template-columns:repeat(3,minmax(0,1fr))}
+  article {height:180px;padding:16px;background:linear-gradient(135deg,#29475e,#37566b);border:1px solid #7594aa}
+  article:nth-child(2n) {background:linear-gradient(135deg,#344657,#4a5360)}
+</style>
+<header><h1>Local scrolling fixture</h1><p>Identical content. No external assets.</p></header><main></main>
+<script>
+(async () => {
+  const main = document.querySelector('main');
+  for (let i=0; i<240; i++) {
+    const card = document.createElement('article');
+    card.innerHTML = `<h2>Card ${i+1}</h2><p>Browser scheduling and scrolling fixture.</p><p>0123456789 abcdefghijklmnopqrstuvwxyz</p>`;
+    main.append(card);
+  }
+  let focusLost = false, hiddenObserved = false, geometryChanged = false;
+  let geometry = () => [innerWidth,innerHeight,devicePixelRatio].join('x');
+  let lastGeometry = geometry();
+  addEventListener('blur', () => {focusLost=true});
+  addEventListener('resize', () => {
+    const current = geometry();
+    if (current !== lastGeometry) geometryChanged = true;
+    lastGeometry = current;
+  });
+  document.addEventListener('visibilitychange', () => {if (document.hidden) hiddenObserved=true});
+  const metadata = () => ({innerWidth,innerHeight,devicePixelRatio,visibilityState:document.visibilityState,
+    focused:document.hasFocus(),focusLost,hiddenObserved,geometryChanged,userAgent:navigator.userAgent});
+  const post = (name, value) => fetch(`${location.pathname}/${name}`, {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(value)}).then(r => {
+      if (!r.ok) throw Error(`POST ${name}: ${r.status}`);
+    });
+  const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
+  await frame(); await frame();
+  await post('ready', metadata());
+  // Wait for an uninterrupted 500 ms of focused, visible, unchanged geometry.
+  let stableSince = null, stableGeometry = null;
+  while (stableSince === null || performance.now()-stableSince < 500) {
+    await frame();
+    const currentGeometry = geometry();
+    const stable = document.hasFocus() && document.visibilityState === 'visible' &&
+      (!stableGeometry || currentGeometry === stableGeometry);
+    if (!stable) { stableSince = null; stableGeometry = null; }
+    else if (stableSince === null) { stableSince = performance.now(); stableGeometry = currentGeometry; }
+  }
+  focusLost = false; hiddenObserved = false; geometryChanged = false; lastGeometry = geometry();
+  // Calibration follows foreground stabilization; any later loss remains recorded.
+  const idle = []; let last = await frame(), start = last;
+  while (last-start<500) { const now=await frame(); idle.push(now-last); last=now; }
+  await post('calibrated', {page:metadata(), intervals:idle});
+  // One blocked request rather than timer polling or rAF during the idle sample.
+  const response = await fetch(`${location.pathname}/control`);
+  if (!response.ok) return;
+  const command = await response.json();
+  if (command.phase !== 'scroll') return;
+  const before = metadata(), intervals = [];
+  const initialY = scrollY, begin = await frame(); last=begin;
+  let now = begin;
+  while (now-begin < 2000) {
+    now = await frame(); intervals.push(now-last); last=now;
+    scrollTo(0, initialY+Math.min(now-begin,2000)*2);
+  }
+  await post('scroll', {page:metadata(), before, intervals, elapsed_ms:now-begin,
+    scroll_distance_px:scrollY-initialY});
+})().catch(error => {document.body.dataset.error=String(error)});
+</script>
