@@ -1,52 +1,34 @@
-# Install and setup
+# Setup
 
 ## Requirements
 
-Use an Omarchy session with `omarchy plugin` support. Install Rust/Cargo, a C toolchain, and the Arch build dependencies: `base-devel`, `pkgconf`, `gtk3`, `webkit2gtk-4.1`, `libappindicator-gtk3`, and `librsvg`. Keep system WebKitGTK updated. If using rustup, make Cargo available on PATH. Node/npm is not required.
+Use an Omarchy session with Rust/Cargo, Git, a C toolchain, and the Arch build dependencies: `base-devel`, `pkgconf`, `gtk3`, `webkit2gtk-4.1`, `libappindicator-gtk3`, and `librsvg`. Keep system WebKitGTK updated. If using rustup, make Cargo available on PATH.
 
 ## Build and launch
 
-Adding the plugin clones and validates the repository but leaves it disabled. It does not install dependencies or compile the browser. Review the code before enabling; plugins run as your user in the Omarchy shell.
-
-Build from the installed checkout:
-
 ```sh
-plugin_dir="$HOME/.config/omarchy/plugins/komagata.omawser"
-cargo build --release --locked \
-  --manifest-path "$plugin_dir/src-tauri/Cargo.toml" \
-  --target-dir "$plugin_dir/src-tauri/target"
-omarchy plugin enable komagata.omawser
-omarchy-shell komagata.omawser status
-omarchy-shell komagata.omawser open
+git clone https://github.com/komagata/omawser.git
+cd omawser
+cargo build --release --locked --manifest-path src-tauri/Cargo.toml --target-dir src-tauri/target
+./scripts/omawser
+# Optional HTTP(S) destination:
+./scripts/omawser https://x.com/home
 ```
 
-The explicit target directory places the binary where the launcher expects it, even if `CARGO_TARGET_DIR` is set globally. Enabling does not open a window. `open` first checks readiness and returns `checking`; run `status` after the check. `lastAction: "launch-requested"` confirms dispatch only, not a visible window. If the binary is missing, build it and run `omarchy-shell komagata.omawser refresh`, or call `open` again. Requests during a check return `busy` and are not queued.
+The explicit target directory places the binary where the source-tree launcher expects it, even if `CARGO_TARGET_DIR` is set globally. The launcher applies the [NVIDIA compatibility setting](browser.md#nvidia-on-wayland). Enter a web address with `Ctrl+L`; see [all browser controls](browser.md#keyboard-controls).
 
-Enter a web address with `Ctrl+L`. The plugin does not add a desktop entry, set the default browser, or change keybindings. Add a launcher binding yourself if desired, after checking for a conflict.
+Run the launcher from this checkout. Building does not place an executable on PATH or install a desktop entry. For manual developer integration, `scripts/omawser.desktop` is a template whose `Exec=omawser %u` requires a separately configured launcher on PATH. No default browser or keybindings are changed automatically.
 
 ## Update
 
-Updating pulls source files but does not rebuild ignored output. Close browser windows yourself to use the new application version immediately, then:
+Close browser windows to use the rebuilt version on the next launch, then run from the checkout:
 
 ```sh
-omarchy plugin disable komagata.omawser
-omarchy plugin update komagata.omawser
-plugin_dir="$HOME/.config/omarchy/plugins/komagata.omawser"
-cargo build --release --locked \
-  --manifest-path "$plugin_dir/src-tauri/Cargo.toml" \
-  --target-dir "$plugin_dir/src-tauri/target"
-omarchy plugin enable komagata.omawser
-omarchy-shell komagata.omawser status
+git pull
+cargo build --release --locked --manifest-path src-tauri/Cargo.toml --target-dir src-tauri/target
+./scripts/omawser
 ```
 
-If the build fails, leave the plugin disabled until it succeeds. Existing detached browser windows continue using their old executable until closed.
+## Browser data
 
-## Disable or remove
-
-```sh
-omarchy plugin disable komagata.omawser
-# Optional: removes the installed checkout and its local build output.
-omarchy plugin remove komagata.omawser
-```
-
-Disabling unregisters the service IPC and cancels pending checks. Neither disabling nor removal closes detached browser windows. Removal deletes the checkout and build output, not browser data. The persistent WebKit profile is `$XDG_DATA_HOME/omawser/webkit` (default `~/.local/share/omawser/webkit`); cookies and website data remain after removal. The plugin does not read, move, or delete that profile. Existing Electron and experimental Qt profiles are separate and are not imported.
+Cookies and website data are stored in `$XDG_DATA_HOME/omawser/webkit` (default `~/.local/share/omawser/webkit`). Rebuilding or removing the source checkout does not delete this profile. The application does not move or import other browser profiles. See [profile and security details](browser.md#profiles-and-security).

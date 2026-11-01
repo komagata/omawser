@@ -1,6 +1,6 @@
 # Native browser behavior
 
-Omawser targets Omarchy. These details describe the independent Tauri application.
+Omawser targets Omarchy. These details describe the standalone Tauri application.
 
 ## NVIDIA on Wayland
 
@@ -54,9 +54,9 @@ Reopen keeps at most 20 closed HTTP(S) URLs per window in memory. It opens a fre
 
 ## Profiles and security
 
-The persistent WebKit profile is `$XDG_DATA_HOME/omawser/webkit` (default `~/.local/share/omawser/webkit`). The plugin leaves existing profiles in place; the application does not move or import them automatically. Cookies and website data are separate from Electron, Chromium, and the experimental Qt profile; nothing is imported. **WebKit cache is co-located in that profile:** Tauri/Wry's Linux API supplies the same base directory for data and cache, so it cannot independently honor `$XDG_CACHE_HOME` for WebKit cache. No cache symlinks or patched dependencies are used. Theme config honors `$XDG_CONFIG_HOME`; this app writes no custom config file there.
+The persistent WebKit profile is `$XDG_DATA_HOME/omawser/webkit` (default `~/.local/share/omawser/webkit`). The application does not move or import other browser profiles automatically. **WebKit cache is co-located in that profile:** Tauri/Wry's Linux API supplies the same base directory for data and cache, so it cannot independently honor `$XDG_CACHE_HOME` for WebKit cache. No cache symlinks or patched dependencies are used. Theme config honors `$XDG_CONFIG_HOME`; this app writes no custom config file there.
 
-Only HTTP(S) navigation is accepted, including redirects and popup destinations. Tauri capabilities are empty; no Tauri plugins or application commands are registered. The Omarchy service plugin is separate from the native application. Remote WebViews have the Tauri bootstrap scripts and script message endpoint removed, and the `tauri:` asset and `ipc:` protocols are replaced by unconditional rejection handlers. The asset protocol is disabled. Native WebKit hooks deny permission requests (including camera, microphone, geolocation and notifications); no remote URL is sent to a shell or external protocol opener. TLS validation, WebKit sandbox settings and the system user agent remain unchanged.
+Only HTTP(S) navigation is accepted, including redirects and popup destinations. Tauri capabilities are empty; no Tauri plugins or application commands are registered. Remote WebViews have the Tauri bootstrap scripts and script message endpoint removed, and the `tauri:` asset and `ipc:` protocols are replaced by unconditional rejection handlers. The asset protocol is disabled. Native WebKit hooks deny permission requests (including camera, microphone, geolocation and notifications); no remote URL is sent to a shell or external protocol opener. TLS validation, WebKit sandbox settings and the system user agent remain unchanged.
 
 Downloads with HTTP(S) request and response URLs ask for a native save destination with overwrite confirmation. Cancelling writes no download. A single native handler per WebKit context resolves the live originating tab/window, so downloads still work after the first tab or window closes. If WebKit omits the origin, only a unique active window or the sole live window sharing that context can own the dialog; ambiguous or closed owners cancel. An approved destination stays fixed when tabs switch. Remote strings are shown as plain text, never GTK markup. Site-created popups requiring `window.opener`, including some OAuth flows, may not work.
 

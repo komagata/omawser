@@ -1,21 +1,21 @@
 # Omawser
 
-A minimal, keyboard-first browser for Omarchy. Its tab strip and colors follow your theme.
+A minimal keyboard-first browser for Omarchy.
 
-## Install
+## Build
+
+See [prerequisites and setup](docs/setup.md).
 
 ```sh
-omarchy plugin add https://github.com/komagata/omawser.git
+cargo build --release --locked --manifest-path src-tauri/Cargo.toml --target-dir src-tauri/target
 ```
 
-[Build and first launch](docs/setup.md) (adding the plugin does not build the browser).
+## Run
 
-## Shortcuts
+```sh
+./scripts/omawser
+```
 
-- `Ctrl+L`: enter a web address
-- `Ctrl+T` / `Ctrl+W`: new / close tab
-- `Ctrl+Tab`: next tab
-- `Alt+Left` / `Alt+Right`: back / forward
-- `Ctrl+R`: reload
+Use `Ctrl+L` to enter an address, `Ctrl+T` to open a tab, and `Ctrl+W` to close it.
 
-See [all browser controls](docs/browser.md#keyboard-controls), [plugin design](docs/plugin-design.md), and [development notes](docs/development.md).
+See [all browser controls](docs/browser.md#keyboard-controls) and [developer checks](docs/development.md).
