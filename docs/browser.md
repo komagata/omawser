@@ -1,6 +1,6 @@
 # Native browser behavior
 
-Omawser targets Omarchy 4. These details describe the independent Tauri application.
+Omawser targets Omarchy. These details describe the independent Tauri application.
 
 ## NVIDIA on Wayland
 

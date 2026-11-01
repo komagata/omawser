@@ -1,10 +1,10 @@
 # Development and historical implementations
 
-The supported user flow is the [Omarchy 4 service plugin](../README.md). The Tauri application remains an independent process. Node/npm is not required for Tauri.
+The supported user flow is the [Omarchy service plugin](../README.md). The Tauri application remains an independent process. Node/npm is not required for Tauri.
 
 ## Direct source run
 
-From an Omarchy 4 source checkout with the [prerequisites](../README.md#install) installed:
+From an Omarchy source checkout with the [prerequisites](setup.md#requirements) installed:
 
 ```sh
 cargo build --release --locked --manifest-path src-tauri/Cargo.toml --target-dir src-tauri/target

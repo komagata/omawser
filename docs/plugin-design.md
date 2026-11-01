@@ -1,6 +1,6 @@
 # Omarchy service plugin design
 
-The root manifest registers `komagata.omawser` as a single `service` entry point hosted by Omarchy 4 Quattro. There is no bar widget, panel, overlay, standalone Quickshell instance, install hook or automatic browser launch. Omarchy add clones/validates the files; dependencies and a release build remain explicit user steps.
+The root manifest registers `komagata.omawser` as a single `service` entry point hosted by Omarchy. There is no bar widget, panel, overlay, standalone Quickshell instance, install hook or automatic browser launch. Omarchy add clones/validates the files; dependencies and a release build remain explicit user steps.
 
 ## Responsibilities
 
@@ -28,7 +28,7 @@ States are `checking`, `unbuilt` (binary or launcher missing/not executable), `r
 
 Loading/enabling performs one readiness check, without launching. The manifest deliberately omits `keepLoaded`. Disable, removal and ordinary hot reload destroy the service, stop its probe/watchdog, release IPC, and cancel pending opens. The destruction guard discards late completion. Re-enabling creates a fresh service and checks again.
 
-Detached application windows survive service disable/reload/removal. They own their own lifecycle and external WebKit profile; the plugin neither kills them nor reads/deletes their data. Removal owns the installed checkout/build output only. See the [update/removal instructions](../README.md#update). A previously running application keeps its old executable until closed.
+Detached application windows survive service disable/reload/removal. They own their own lifecycle and external WebKit profile; the plugin neither kills them nor reads/deletes their data. Removal owns the installed checkout/build output only. See the [update/removal instructions](setup.md#update). A previously running application keeps its old executable until closed.
 
 ## Tests
 
