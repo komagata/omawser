@@ -2,20 +2,16 @@
 
 A minimal keyboard-first browser for Omarchy.
 
-## Build
+## Install
 
-See [prerequisites and setup](docs/setup.md).
+Follow the [desktop installation guide](docs/setup.md#install).
 
-```sh
-cargo build --release --locked --manifest-path src-tauri/Cargo.toml --target-dir src-tauri/target
-```
-
-## Run
+## Launch
 
 ```sh
-./scripts/omawser
+omawser
 ```
 
-Use `Ctrl+L` to enter an address, `Ctrl+T` to open a tab, and `Ctrl+W` to close it.
+You can also search for **Omawser** in the app launcher. To open a page directly, run `omawser https://x.com/home`.
 
-See [all browser controls](docs/browser.md#keyboard-controls) and [developer checks](docs/development.md).
+See [browser controls](docs/browser.md#keyboard-controls) or the [build and development guide](docs/setup.md#build-from-source).
