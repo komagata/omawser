@@ -2,7 +2,7 @@
 
 A minimal keyboard-first browser for Omarchy.
 
-![Omawser](docs/screenshot.png)
+![Omawser on the Omarchy desktop](docs/screenshot.png)
 
 ## Install
 
