@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "komagata.omawser",
+  "name": "Omawser",
+  "version": "0.1.0",
+  "author": "komagata",
+  "description": "Launch the independent Omawser browser through headless Omarchy IPC",
+  "kinds": ["service"],
+  "entryPoints": { "service": "plugin/Service.qml" }
+}
